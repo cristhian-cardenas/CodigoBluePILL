@@ -1,0 +1,2 @@
+../Core/Src/bno08x/telemetry.c:65:20:split_float	1
+../Core/Src/bno08x/telemetry.c:81:6:telemetry_send	1

@@ -1,0 +1,97 @@
+Here is a starting point, you need to adapt it to your needs. 
+Set up your interrupt pin first and configure the callback
+
+  /*Configure GPIO pins : BNO_BOOT_Pin BNO_RST_Pin */
+  GPIO_InitStruct.Pin = BNO_BOOT_Pin|BNO_RST_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+   /*Configure GPIO pin : BNO_INT_Pin */
+  GPIO_InitStruct.Pin = BNO_INT_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(BNO_INT_GPIO_Port, &GPIO_InitStruct);
+
+    /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+ 
+// Interrupt callback function for BMP581/HDC302x and BNO086
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+    if(GPIO_Pin == BMP_INT_Pin) {
+        BMP_Ready = 1;
+    }
+    if(GPIO_Pin == BNO_INT_Pin) {
+        BNO_Ready = 1;
+    }
+    if(GPIO_Pin == HDC1_Ready) {
+        HDC1_Ready = 1;
+    }
+    if(GPIO_Pin == HDC2_Ready) {
+        HDC2_Ready = 1;
+    }
+    __HAL_GPIO_EXTI_CLEAR_IT(GPIO_Pin);
+}
+
+
+In main function start with
+
+BNO_RST_On;
+BNO_BOOT_On; // Off only for DFU mode 0x52 I2C Address
+
+where
+
+#define BNO_BOOT_Pin GPIO_PIN_13
+#define BNO_BOOT_GPIO_Port GPIOC
+#define BNO_RST_Pin GPIO_PIN_14
+#define BNO_RST_GPIO_Port GPIOC
+#define BNO_INT_Pin GPIO_PIN_0
+#define BNO_INT_GPIO_Port GPIOA
+#define BNO_INT_EXTI_IRQn EXTI0_IRQn
+#define BMP_INT_Pin GPIO_PIN_2
+#define BMP_INT_GPIO_Port GPIOA
+
+
+#define BNO_RST_On BNO_RST_GPIO_Port->BSRR = (uint32_t)BNO_RST_Pin;
+#define BNO_RST_Off BNO_RST_GPIO_Port->BRR = (uint32_t)BNO_RST_Pin;
+
+#define BNO_BOOT_On BNO_BOOT_GPIO_Port->BSRR = (uint32_t)BNO_BOOT_Pin;
+#define BNO_BOOT_Off BNO_BOOT_GPIO_Port->BRR = (uint32_t)BNO_BOOT_Pin;
+
+// Init and start BNO086
+if(BNO_Init() == HAL_OK) {
+BNO_setHighAccuracyMode();
+sendMessage(RESPONSE_BNO_INIT_OK);
+} else {
+sendMessage(RESPONSE_BNO_INIT_FAIL);
+printf("BNO initialization failed!\n");
+}
+
+  while (1)
+  {
+// If we have a command
+if(crtCmd == CMD_CALIBRATE) {
+crtCmd = 0;
+if(BNO_calibrateHighAccuracyAndReset() == HAL_OK){
+sendMessage(RESPONSE_CALIBRATE_OK);
+} else {
+sendMessage(RESPONSE_CALIBRATE_FAIL);
+}
+}
+// If BNO086 triggers interrup, check for new data
+if(BNO_Ready) {
+// Did we have a reset? SetUp sensor again
+if(isResetOccurred()) {
+if(BNO_setFeature(ROTATION_VECTOR, 100000, 0) != HAL_OK) {
+//printf("Reset Occurred. Set feature failed\r\n");
+}
+}
+// If we have new data from BNO
+if((BNO_dataAvailable() == HAL_OK) && (sensorData.sensorId == ROTATION_VECTOR)) {
+sensorData.sensorId = 0;
+//printf("Y = %.3lf P = %.3lf R = %.3lf \r\n", rpy.Yaw, rpy.Pitch, rpy.Roll);
+}
+}
+}

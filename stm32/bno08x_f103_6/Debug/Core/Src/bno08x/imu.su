@@ -1,0 +1,4 @@
+../Core/Src/bno08x/imu.c:107:12:configure_imu_sensors	80	static
+../Core/Src/bno08x/imu.c:155:13:sensorCallback	136	static
+../Core/Src/bno08x/imu.c:348:5:imu_init	8	static
+../Core/Src/bno08x/imu.c:385:6:imu_service	8	static
