@@ -1,3 +1,0 @@
-../Core/Src/bno08x/encoder.c:75:14:encoder_calculate_angle	32	static
-../Core/Src/bno08x/encoder.c:111:5:encoder_init	16	static
-../Core/Src/bno08x/encoder.c:156:6:HAL_TIM_IC_CaptureCallback	24	static

@@ -64,8 +64,8 @@ all: main-build
 main-build: bno08x_f103_6.elf secondary-outputs
 
 # Tool invocations
-bno08x_f103_6.elf bno08x_f103_6.map: $(OBJS) $(USER_OBJS) /home/azul/Lap1-Brain/Brain/src/tests/imu/stm32/bno08x_f103_6/STM32F103C8TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "bno08x_f103_6.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"/home/azul/Lap1-Brain/Brain/src/tests/imu/stm32/bno08x_f103_6/STM32F103C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="bno08x_f103_6.map" -Wl,--gc-sections -static -u _printf_float --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+bno08x_f103_6.elf bno08x_f103_6.map: $(OBJS) $(USER_OBJS) /home/azul/Lap1-Embedded-platform/BluePill/bno08x_f103_6/STM32F103C8TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "bno08x_f103_6.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"/home/azul/Lap1-Embedded-platform/BluePill/bno08x_f103_6/STM32F103C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="bno08x_f103_6.map" -Wl,--gc-sections -static -u _printf_float --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
