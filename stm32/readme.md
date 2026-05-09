@@ -11,24 +11,22 @@ The float formatting support is not enabled
 En el proyecto:
 
 1. Click derecho sobre el proyecto
-  
+
 2. **Properties**
-  
+
 3. **C/C++ Build → Settings**
-  
+
 4. **Tool Settings → MCU GCC Linker → Miscellaneous**
-  
+
 5. En **Other flags** agregar:
-  
 
 ```
 -u _printf_float
 ```
 
 6. Presionar **Apply and Close**
-  
+
 7. Ejecutar **Clean** y luego **Build**
-  
 
 ### 🧪 Prueba
 
