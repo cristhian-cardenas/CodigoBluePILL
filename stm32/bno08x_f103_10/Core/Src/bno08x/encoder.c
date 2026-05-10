@@ -48,7 +48,7 @@ static volatile uint32_t duty_value = 0;
 
 // Odometría: ticks por vuelta (0..4095), unwrap y acumulación
 static int32_t last_ticks = 0;
-static int64_t total_ticks = 0;
+static uint32_t total_ticks = 0;
 static uint8_t first_capture = 1;
 
 /* USER CODE END Private variables */
@@ -209,7 +209,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
                     {
                         delta += ENCODER_RESOLUTION;
                     }
-                    total_ticks += (int64_t)delta;
+                    total_ticks += (uint32_t)delta;
                     last_ticks = current_ticks;
                 }
 

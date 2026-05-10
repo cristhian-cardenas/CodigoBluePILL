@@ -37,7 +37,7 @@ typedef struct {
     float lin_az;
     uint8_t imu_status;
     float encoder_angle;
-    int64_t encoder_total_ticks;
+    uint32_t encoder_total_ticks;
 } SystemState_t;
 
 /* USER CODE END Exported types */

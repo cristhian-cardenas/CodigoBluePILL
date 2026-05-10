@@ -18,6 +18,7 @@
 /* USER CODE BEGIN Includes */
 #include "system_state.h"
 #include <stdio.h>
+#include <inttypes.h>
 #include <math.h>
 /* USER CODE END Includes */
 
@@ -88,12 +89,10 @@ void telemetry_send(void)
     split_float(g_systemState.roll,    &r_i,  &r_f);
     split_float(g_systemState.pitch,   &p_i,  &p_f);
 
-    // Vueltas totales para odometría (3 decimales)
-    double total_turns = (double)g_systemState.encoder_total_ticks / 4096.0;
-
-    // Formato: @imu:roll;pitch;heading;lin_ax;lin_ay;lin_az;encoder_angle;total_turns;;\r\n
+    // Ticks acumulados mod 2^32 (el receptor obtiene delta por diferencia modular)
+    // Formato: @imu:roll;pitch;heading;lin_ax;lin_ay;lin_az;encoder_angle;encoder_ticks;;\r\n
     int len = snprintf(buffer, sizeof(buffer),
-    	"@imu:%d.%01d;%d.%01d;%.1f;%.3f;%.3f;%.3f;%.1f;%.3f;;\r\n",
+    	"@imu:%d.%01d;%d.%01d;%.1f;%.3f;%.3f;%.3f;%.1f;%" PRIu32 ";;\r\n",
         r_i,  r_f,
         p_i,  p_f,
         g_systemState.heading,
@@ -101,7 +100,7 @@ void telemetry_send(void)
         g_systemState.lin_ay,
         g_systemState.lin_az,
         g_systemState.encoder_angle,
-        total_turns
+        g_systemState.encoder_total_ticks
     );
 
     // ===== ENVIAR POR UART =====
